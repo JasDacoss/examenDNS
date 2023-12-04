@@ -114,3 +114,15 @@ services:
 
 Hay que recordar que la IP que se especifique debe estar dentro del rango de la subred definida en `subnet` para evitar conflictos. En el ejemplo anterior, se utiliza `172.28.5.0/24`. 
 
+### 5. ¿Que comando de consola puedo usar para saber las ips de los contenedores anteriores? Filtra todo lo que puedas la salida.
+
+Podemos utilizar el comando `docker ps -aq` para obtener una lista de los IDs de todos los contenedores anteriores. Luego, se puede filtrar la salida de la siguiente manera:
+
+```
+docker inspect --format='{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $(docker ps -aq)
+```
+
+Este comando primero obtiene los IDs de los contenedores anteriores con `docker ps -aq` y luego utiliza `docker inspect` para obtener la dirección IP de cada contenedor. El flag `--format` permite especificar el formato de salida, y en este caso, utilizamos una plantilla para imprimir solo la dirección IP de cada contenedor.
+
+Esto dará una salida donde cada línea corresponderá a la dirección IP de un contenedor anterior.
+
