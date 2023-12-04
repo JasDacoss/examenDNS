@@ -180,3 +180,52 @@ Cuando un usuario intenta acceder a "www.asir.com", el registro CNAME le indica 
    Aquí, `/ruta/dns-config` es la ruta dentro del nuevo contenedor que contendrá los archivos de configuración del DNS.
 
 De esta manera, al utilizar el mismo volumen en ambos contenedores, la configuración del contenedor DNS estará preservada incluso al crear un nuevo contenedor.
+
+### `9.` Añade una zona tiendadeelectronica.int en tu docker DNS
+
+Para crear la zona tiendadeelectronica.int en el Docker DNS, se modificará el archivo de configuración del DNS en el servidor de la práctica del DNS:
+
+1. Accedemos al servidor donde está ejecutándose el Docker DNS.
+2. Abrimos el archivo de configuración del DNS. Esto puede variar dependiendo del servidor DNS que se esté utilizando. Por ejemplo, para BIND, el archivo de configuración suele ser `/etc/bind/named.conf`.
+3. Dentro del archivo de configuración, buscamos la sección `zone` y añadimos la siguiente entrada:
+
+```
+zone "tiendadeelectronica.int" {
+    type master;
+    file "/etc/bind/zones/tiendadeelectronica.int.zone";
+};
+```
+
+4. Creamos el archivo de zona `db.tiendadeelectronica.int` en la ubicación especificada anteriormente. Este archivo contendrá los registros de la zona. Añadimos los siguientes registros:
+
+```
+$TTL 1d
+@    IN    SOA   ns1.tiendadeelectronica.int. admin.tiendadeelectronica.int. (
+                       2021092101 ; Serial
+                       3600       ; Refresh
+                       1800       ; Retry
+                       604800     ; Expire
+                       86400      ; Minimum TTL
+                       )
+     IN    NS    ns1.tiendadeelectronica.int.
+
+www  IN    A     172.16.0.1
+owncloud  IN    CNAME www
+     IN    TXT   "1234ASDF"
+```
+
+5. Guardamos los cambios en el archivo `db.tiendadeelectronica.int`.
+6. Reiniciamos el servicio DNS para aplicar los cambios.
+
+Ahora, podemos comprobar que todo funciona correctamente utilizando el comando `dig`. Primero nos aseguramos de haber instalado el programa `dig` en nuestro sistema. Luego, ejecutamos los siguientes comandos para obtener los registros de la zona `tiendadeelectronica.int`:
+
+```
+dig www.tiendadeelectronica.int
+dig owncloud.tiendadeelectronica.int
+dig TXT tiendadeelectronica.int
+```
+
+Si todo está configurado correctamente, deberíamos obtener respuestas con los valores correspondientes.
+
+Para mostrar los logs del servicio DNS, podemos utilizar el comando específico para el servidor DNS que estemos utilizando. Por ejemplo, para BIND, el comando sería `tail -f /var/log/syslog` en sistemas Linux.
+

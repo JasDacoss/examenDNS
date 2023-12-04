@@ -1,0 +1,25 @@
+services:
+  asir_bind9:
+    container_name: asir_bind9
+    image: internetsystemsconsortium/bind9:9.16
+    platform: linux/amd64
+    ports:
+      - 53:53
+    networks:
+      bind9_subnet:
+        ipv4_address: 172.28.5.1
+    volumes:
+      - ./conf:/etc/bind
+      - ./zonas:/var/lib/bind
+  asir_cliente:
+    container_name: asir_cliente
+    image: alpine
+    networks:
+      - bind9_subnet
+    stdin_open: true 
+    tty: true 
+    dns:
+      - 172.28.5.1 
+networks:
+  bind9_subnet:
+    external: true
