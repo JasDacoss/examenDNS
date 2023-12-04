@@ -143,3 +143,17 @@ services:
 En este caso, el puerto 8080 del host se mapearía al puerto 80 del contenedor. Esto permite acceder al servicio dentro del contenedor a través de la dirección IP del host y el puerto mapeado.
 
 El uso de "ports" es útil cuando se desea acceder a los servicios dentro de los contenedores desde el host o desde otros contenedores en la misma red Docker. También es posible configurar la propiedad "ports" en función de la dirección IP específica del host que se utilizará para el mapeo.
+
+### `7.` Definición del registro CNAME con un ejemplo
+
+El registro CNAME, o alias de nombre canónico, es un tipo de registro en el sistema de nombres de dominio (DNS) que se utiliza para asociar un nombre de dominio con otro nombre de dominio. 
+
+El CNAME se utiliza generalmente cuando se desea redirigir un nombre de dominio a otro dominio o subdominio. Por ejemplo, supongamos que tenemos el dominio "asir.com" y queremos redirigir el subdominio "www" a otro dominio llamado "otro_asir.com". En este caso, crearíamos un registro CNAME en el DNS de "asir.com" que dirija el subdominio "www" a "otro_asir.com".
+
+El registro CNAME se vería así:
+```
+www.asir.com.   IN   CNAME   otro_asir.com.
+```
+En este ejemplo, "www.asir.com" es el nombre de dominio que queremos redirigir y "otro_asir.com" es el dominio al que queremos redirigirlo.
+
+Cuando un usuario intenta acceder a "www.asir.com", el registro CNAME le indica que redirija la solicitud a "otro_asir.com". Esto permite que el subdominio "www" sea utilizado para acceder al contenido del dominio "otro_asir.com" sin tener que configurar un servidor web adicional para "www.asir.com".
