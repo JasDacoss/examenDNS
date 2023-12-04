@@ -26,3 +26,17 @@ Docker Compose te permite crear y ejecutar aplicaciones Docker multicontenedor. 
 
 Del mismo modo, si quieres iniciar un nuevo contenedor utilizando Docker Compose y obtener acceso inmediato a él, ejecuta el este comando.
 
+### 2. Opciones que tiene que haber sido arrancado el contenedor anterior para poder interactuar con las entradas y salidas del contenedor
+
+1. `-i` o `--interactive`: Esta opción permite mantener abierta la entrada estándar (stdin) del contenedor, lo que permite enviar comandos e interactuar con él.
+2. `-t` o `--tty`: Esta opción asigna una pseudo-tty (terminal) al contenedor, lo que permite una interacción más amigable y legible con el mismo.
+3. `--rm` o `--detach`: Estas opciones permiten ejecutar el contenedor en modo desprendido (detach mode), es decir, se ejecutará en segundo plano en lugar de estar en primer plano. Sin embargo, con la opción `--rm`, el contenedor se eliminará automáticamente cuando se detenga su ejecución.
+
+Por ejemplo, para arrancar un contenedor interactivo y en modo terminal, se puede utilizar el siguiente comando:
+
+```
+docker run -it <nombre>
+```
+
+Donde `<nombre>` es el nombre de la imagen de Docker que se desea utilizar para crear el contenedor.
+
