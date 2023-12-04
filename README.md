@@ -40,3 +40,39 @@ docker run -it <nombre>
 
 Donde `<nombre>` es el nombre de la imagen de Docker que se desea utilizar para crear el contenedor.
 
+### 3. ¿Cómo sería un fichero docker-compose para que dos contenedores se comuniquen entre si en una red solo de ellos?
+
+Este es un ejemplo de un archivo `docker-compose.yml` que crea dos contenedores en una red dedicada y les permite comunicarse entre sí:
+
+```yaml
+services:
+  asir_bind9:
+    container_name: asir_bind9
+    image: internetsystemsconsortium/bind9:9.16
+    platform: linux/amd64
+    ports:
+      - 53:53
+    networks:
+      bind9_subnet:
+        ipv4_address: 172.28.5.1
+    volumes:
+      - ./conf:/etc/bind
+      - ./zonas:/var/lib/bind
+  asir_cliente:
+    container_name: asir_cliente
+    image: alpine
+    networks:
+      - bind9_subnet
+    stdin_open: true 
+    tty: true 
+    dns:
+      - 172.28.5.1 
+networks:
+  bind9_subnet:
+    external: true
+```
+
+En este ejemplo, tienes dos servicios (`asir_bind9` y `asir_cliente`) que se construyen a partir de sus respectivos `image`. Ambos servicios están conectados a la misma red.
+
+Cada contenedor puede comunicarse con el otro usando el nombre del servicio como hostname. Por ejemplo, dentro de `asir_bind9`, puedes acceder a `asir_cliente` usando la URL `http://asir_cliente:ip`, donde `dns` es el puerto asignado a `asir_cliente`.
+
