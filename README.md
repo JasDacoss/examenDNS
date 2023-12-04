@@ -4,7 +4,7 @@
 ## Antes de empezar
 Lo primero es ir a git y crear un nuevo repositorio. Después de esto, creamos nuestro nuevo proyecto en el Code. Una vez listo esto, creamos también un nuevo proyecto en Git y lo asociamos al repositorio creado anteriormente.
 
-### 1. Métodos para 'abrir' una consola/shell a un contenedor que se está ejecutando
+### `1.` Métodos para 'abrir' una consola/shell a un contenedor que se está ejecutando
 
     $ docker exec
 
@@ -26,7 +26,7 @@ Docker Compose te permite crear y ejecutar aplicaciones Docker multicontenedor. 
 
 Del mismo modo, si quieres iniciar un nuevo contenedor utilizando Docker Compose y obtener acceso inmediato a él, ejecuta el este comando.
 
-### 2. Opciones que tiene que haber sido arrancado el contenedor anterior para poder interactuar con las entradas y salidas del contenedor
+### `2.` Opciones que tiene que haber sido arrancado el contenedor anterior para poder interactuar con las entradas y salidas del contenedor
 
 1. `-i` o `--interactive`: Esta opción permite mantener abierta la entrada estándar (stdin) del contenedor, lo que permite enviar comandos e interactuar con él.
 2. `-t` o `--tty`: Esta opción asigna una pseudo-tty (terminal) al contenedor, lo que permite una interacción más amigable y legible con el mismo.
@@ -40,7 +40,7 @@ docker run -it <nombre>
 
 Donde `<nombre>` es el nombre de la imagen de Docker que se desea utilizar para crear el contenedor.
 
-### 3. ¿Cómo sería un fichero docker-compose para que dos contenedores se comuniquen entre si en una red solo de ellos?
+### `3.` ¿Cómo sería un fichero docker-compose para que dos contenedores se comuniquen entre si en una red solo de ellos?
 
 Este es un ejemplo de un archivo `docker-compose.yml` que crea dos contenedores en una red dedicada y les permite comunicarse entre sí:
 
@@ -76,7 +76,7 @@ En este ejemplo, tienes dos servicios (`asir_bind9` y `asir_cliente`) que se con
 
 Cada contenedor puede comunicarse con el otro usando el nombre del servicio como hostname. Por ejemplo, dentro de `asir_bind9`, puedes acceder a `asir_cliente` usando la URL `http://asir_cliente:ip`, donde `dns` es el puerto asignado a `asir_cliente`.
 
-### 4. ¿Qué hay que añadir al fichero anterior para que un contenedor tenga la IP fija?
+### `4.` ¿Qué hay que añadir al fichero anterior para que un contenedor tenga la IP fija?
 
 Para asignar una IP fija a un contenedor en Docker Compose, se debe añadir la siguiente configuración:
 
@@ -114,7 +114,7 @@ services:
 
 Hay que recordar que la IP que se especifique debe estar dentro del rango de la subred definida en `subnet` para evitar conflictos. En el ejemplo anterior, se utiliza `172.28.5.0/24`. 
 
-### 5. ¿Que comando de consola puedo usar para saber las ips de los contenedores anteriores? Filtra todo lo que puedas la salida.
+### `5.` ¿Que comando de consola puedo usar para saber las ips de los contenedores anteriores? Filtra todo lo que puedas la salida.
 
 Podemos utilizar el comando `docker ps -aq` para obtener una lista de los IDs de todos los contenedores anteriores. Luego, se puede filtrar la salida de la siguiente manera:
 
@@ -126,3 +126,20 @@ Este comando primero obtiene los IDs de los contenedores anteriores con `docker 
 
 Esto dará una salida donde cada línea corresponderá a la dirección IP de un contenedor anterior.
 
+### `6.` ¿Cual es la funcionalidad del apartado "ports" en docker compose?
+
+El apartado "ports" en Docker Compose se utiliza para mapear los puertos de los contenedores que se ejecutan a los puertos del host. 
+
+Cada servicio definido en el archivo docker-compose.yml puede tener su propia sección "ports". Dentro de esta sección, se indica el puerto del host seguido de dos puntos ":" y luego el puerto del contenedor. Por ejemplo:
+
+```
+services:
+  web:
+    ...
+    ports:
+      - "8080:80"
+```
+
+En este caso, el puerto 8080 del host se mapearía al puerto 80 del contenedor. Esto permite acceder al servicio dentro del contenedor a través de la dirección IP del host y el puerto mapeado.
+
+El uso de "ports" es útil cuando se desea acceder a los servicios dentro de los contenedores desde el host o desde otros contenedores en la misma red Docker. También es posible configurar la propiedad "ports" en función de la dirección IP específica del host que se utilizará para el mapeo.
