@@ -229,3 +229,45 @@ Si todo está configurado correctamente, deberíamos obtener respuestas con los 
 
 Para mostrar los logs del servicio DNS, podemos utilizar el comando específico para el servidor DNS que estemos utilizando. Por ejemplo, para BIND, el comando sería `tail -f /var/log/syslog` en sistemas Linux.
 
+### `10.` Lo mismo pero esta vez en maquina virtual linux con DNS
+
+Abrimos nuestra máquina virtual Ubuntu donde tenemos instalado bind9 y creamos la siguiente carpeta para guardas nuestros ficheros de configuración:
+
+```
+$ sudo mkdir /etc/bind/conf
+```
+
+Lo siguiente será abrir los ficheros para configurarlos de la misma manera que los tenemos en el apartado anterior:
+
+```
+$ sudo nano /etc/bind/conf/named.conf
+```
+
+Y así con los otros dos:
+
+```
+$ sudo nano /etc/bind/conf/named.conf.local
+
+$ sudo nano /etc/bind/conf/named.conf.options
+```
+Lo siguiente será crear la carpeta zonas:
+
+```
+$ sudo mkdir /etc/bind/zonas
+```
+A la que añadiremos las dos zonas que tenemos en el apartado anterior. Aunque el apartado solo expecifique una zona en mi caso pondré las dos para tenerlo igual.
+
+```
+$ sudo nano /etc/bind/zonas/db.asircastelao.int
+
+$ sudo nano /etc/bind/zonas/db.tiendaelectronica.int
+```
+
+Y como antes añadiremos la misma configuración de nuestros ficheros docker.
+
+Por último añadiremos el fichero `docker-compose` e igual que antes con la misma configuración.
+
+```
+$ sudo nano /etc/bind/docker-compose.yml
+```
+
