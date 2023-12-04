@@ -35,7 +35,7 @@ Del mismo modo, si quieres iniciar un nuevo contenedor utilizando Docker Compose
 Por ejemplo, para arrancar un contenedor interactivo y en modo terminal, se puede utilizar el siguiente comando:
 
 ```
-docker run -it <nombre>
+$ docker run -it <nombre>
 ```
 
 Donde `<nombre>` es el nombre de la imagen de Docker que se desea utilizar para crear el contenedor.
@@ -119,7 +119,7 @@ Hay que recordar que la IP que se especifique debe estar dentro del rango de la 
 Podemos utilizar el comando `docker ps -aq` para obtener una lista de los IDs de todos los contenedores anteriores. Luego, se puede filtrar la salida de la siguiente manera:
 
 ```
-docker inspect --format='{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $(docker ps -aq)
+$ docker inspect --format='{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $(docker ps -aq)
 ```
 
 Este comando primero obtiene los IDs de los contenedores anteriores con `docker ps -aq` y luego utiliza `docker inspect` para obtener la dirección IP de cada contenedor. El flag `--format` permite especificar el formato de salida, y en este caso, utilizamos una plantilla para imprimir solo la dirección IP de cada contenedor.
@@ -157,3 +157,26 @@ www.asir.com.   IN   CNAME   otro_asir.com.
 En este ejemplo, "www.asir.com" es el nombre de dominio que queremos redirigir y "otro_asir.com" es el dominio al que queremos redirigirlo.
 
 Cuando un usuario intenta acceder a "www.asir.com", el registro CNAME le indica que redirija la solicitud a "otro_asir.com". Esto permite que el subdominio "www" sea utilizado para acceder al contenido del dominio "otro_asir.com" sin tener que configurar un servidor web adicional para "www.asir.com".
+
+### `8.` ¿Como puedo hacer para que la configuración de un contenedor DNS no se borre si creo otro contenedor?
+
+1. Se crea un volumen en Docker que contenga los archivos de configuración del contenedor DNS. Por ejemplo:
+   ```
+   $ docker volume create dns-config
+   ```
+
+2. Se monta este volumen en el contenedor DNS al momento de crearlo. Por ejemplo:
+   ```
+   $ docker run -d --name contenedor-dns -v dns-config:/ruta/config contenedor-dns
+   ```
+
+   Aquí, `/ruta/config` es la ruta dentro del contenedor que almacena los archivos de configuración del DNS.
+
+3. Al crear un nuevo contenedor, se utiliza el mismo volumen que contiene la configuración del contenedor DNS. Por ejemplo, si deseamos crear un contenedor web:
+   ```
+   $ docker run -d --name contenedor-web -v dns-config:/ruta/dns-config contenedor-web
+   ```
+
+   Aquí, `/ruta/dns-config` es la ruta dentro del nuevo contenedor que contendrá los archivos de configuración del DNS.
+
+De esta manera, al utilizar el mismo volumen en ambos contenedores, la configuración del contenedor DNS estará preservada incluso al crear un nuevo contenedor.
