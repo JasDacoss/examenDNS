@@ -76,3 +76,41 @@ En este ejemplo, tienes dos servicios (`asir_bind9` y `asir_cliente`) que se con
 
 Cada contenedor puede comunicarse con el otro usando el nombre del servicio como hostname. Por ejemplo, dentro de `asir_bind9`, puedes acceder a `asir_cliente` usando la URL `http://asir_cliente:ip`, donde `dns` es el puerto asignado a `asir_cliente`.
 
+### 4. ¿Qué hay que añadir al fichero anterior para que un contenedor tenga la IP fija?
+
+Para asignar una IP fija a un contenedor en Docker Compose, se debe añadir la siguiente configuración:
+
+1. Se agrega una sección de `networks` en el archivo `docker-compose.yml` si aún no se tiene una:
+```yaml
+networks:
+  my_network:
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.28.5.0/24
+```
+
+2. Dentro de la definición del servicio al que se desa asignar una IP fija, se especifica la `networks` que acabas de crear y agrega una etiqueta `ipv4_address` con la IP deseada:
+```yaml
+version: '3'
+services:
+  my_service:
+    image: my_image
+    networks:
+      my_network:
+        ipv4_address: 172.28.5.1
+```
+En nuestro caso en el servicio bind9 añadiremos esto y en el cliente señalaremos solo `bind9_subnet` como ya está puesto en el ejemplo del ejercicio anterior.
+
+3. Por último, hay que asegurarse de que otros servicios que necesiten comunicarse con el contenedor con IP fija también se conecten a la misma `networks`:
+```yaml
+version: '3'
+services:
+  otro_service:
+    image: otra_image
+    networks:
+      my_network:
+```
+
+Hay que recordar que la IP que se especifique debe estar dentro del rango de la subred definida en `subnet` para evitar conflictos. En el ejemplo anterior, se utiliza `172.28.5.0/24`. 
+
