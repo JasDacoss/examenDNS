@@ -24,7 +24,7 @@ Docker Compose te permite crear y ejecutar aplicaciones Docker multicontenedor. 
 
     $ docker compose run
 
-Del mismo modo, si quieres iniciar un nuevo contenedor utilizando Docker Compose y obtener acceso inmediato a él, ejecuta el este comando.
+Del mismo modo, si queremos iniciar un nuevo contenedor utilizando Docker Compose y obtener acceso inmediato a él, ejecutamos este comando.
 
 ### `2.` Opciones que tiene que haber sido arrancado el contenedor anterior para poder interactuar con las entradas y salidas del contenedor
 
@@ -231,43 +231,64 @@ Para mostrar los logs del servicio DNS, podemos utilizar el comando específico 
 
 ### `10.` Lo mismo pero esta vez en maquina virtual linux con DNS
 
-Abrimos nuestra máquina virtual Ubuntu donde tenemos instalado bind9 y creamos la siguiente carpeta para guardas nuestros ficheros de configuración:
+Para añadir la zona tiendadeelectronica.int en Ubuntu DNS se hace lo siguiente:
+
+1. Abrimos el archivo de configuración de BIND, que es el servidor de DNS utilizado en Ubuntu. El archivo de configuración se encuentra en `/etc/bind/named.conf.local`. 
 
 ```
-$ sudo mkdir /etc/bind/conf
+sudo nano /etc/bind/named.conf.local
 ```
 
-Lo siguiente será abrir los ficheros para configurarlos de la misma manera que los tenemos en el apartado anterior:
+2. Dentro del archivo `named.conf.local`, añadimos la siguiente configuración para la zona `tiendadeelectronica.int`:
 
 ```
-$ sudo nano /etc/bind/conf/named.conf
+zone "tiendadeelectronica.int" {
+    type master;
+    file "/etc/bind/zones/tiendadeelectronica.int.zone";
+};
 ```
 
-Y así con los otros dos:
+3. Guardamos y cerramos el archivo.
+
+4. Creamos el archivo de zona `tiendadeelectronica.int.zone` en `/etc/bind/zones/` con el siguiente contenido:
 
 ```
-$ sudo nano /etc/bind/conf/named.conf.local
+$TTL 86400
+@       IN      SOA     ns1.tiendadeelectronica.int. admin.tiendadeelectronica.int. (
+                              2019010101 ; Serial
+                              3600       ; Refresh
+                              1800       ; Retry
+                              604800     ; Expire
+                              86400      ; Minimum TTL
+)
+@       IN      NS      ns1.tiendadeelectronica.int.
 
-$ sudo nano /etc/bind/conf/named.conf.options
-```
-Lo siguiente será crear la carpeta zonas:
+www     IN      A       172.16.0.1
+owncloud        IN      CNAME   www
 
-```
-$ sudo mkdir /etc/bind/zonas
-```
-A la que añadiremos las dos zonas que tenemos en el apartado anterior. Aunque el apartado solo expecifique una zona en mi caso pondré las dos para tenerlo igual.
-
-```
-$ sudo nano /etc/bind/zonas/db.asircastelao.int
-
-$ sudo nano /etc/bind/zonas/db.tiendaelectronica.int
-```
-
-Y como antes añadiremos la misma configuración de nuestros ficheros docker.
-
-Por último añadiremos el fichero `docker-compose` e igual que antes con la misma configuración.
-
-```
-$ sudo nano /etc/bind/docker-compose.yml
+@       IN      TXT     "1234ASDF"
 ```
 
+5. Otra vez guardamos y cerramos el archivo. Acordarnos de guardar es muy importante.
+
+6. Reiniciamos el servicio de BIND para aplicar los cambios:
+
+```
+sudo service bind9 restart
+```
+
+7. Ahora podemos comprobar que todo está configurado correctamente utilizando el comando `dig`:
+
+```
+dig www.tiendadeelectronica.int
+```
+
+Deberíamos obtener una respuesta que muestra la dirección IP 172.16.0.1.
+
+Para mostrar los logs del servicio BIND y verificar que arranca correctamente, podemos usar el siguiente comando:
+
+```
+sudo tail -f /var/log/syslog | grep named
+```
+
+Esto mostrará las últimas líneas del log del sistema (`/var/log/syslog`) que contienen la palabra clave "named", que es el nombre del servicio de BIND. Si vemos mensajes que indican que el servicio se inicia correctamente, entonces todo está en orden.
